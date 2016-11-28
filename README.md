@@ -14,6 +14,23 @@ asynchttpserver does.
     * Only parses HTTP method, protocol version, URL, and headers
     * Everything else is up to the application
 
+##Setup
+In order to use this in your program, you must install the
+[picohttpparser.h](https://github.com/h2o/picohttpparser/blob/master/picohttpparser.h)
+header on your machine, and link your Nim program with
+[picohttpparser.c](https://github.com/h2o/picohttpparser/blob/master/picohttpparser.c).
+
+The easiest way to do this is to:
+
+1. Copy the [picohttpparser](https://github.com/h2o/picohttpparser) sources into your
+   project sources,
+2. Use the [cincludes](http://nim-lang.org/docs/nimc.html) Nim compiler flag
+   to add the picohttpparser sources to the C compiler include search path,
+3. And create a Nim file that uses the
+   [compile pragma](http://nim-lang.org/docs/manual.html#implementation-specific-pragmas-compile-pragma)
+   to compile
+   [picohttpparser.c](https://github.com/h2o/picohttpparser/blob/master/picohttpparser.c).
+
 ##Usage
 microasynchttpserver is mostly API compatible with
 [asynchttpserver](https://github.com/nim-lang/Nim/blob/devel/lib/pure/asynchttpserver.nim).
