@@ -106,11 +106,20 @@ proc processConnection(socket: AsyncSocket, hostname: string, callback: proc (re
                     HttpGet
 
             if reqMethodIsValid:
-                var request = Request(client: socket, reqMethod: reqMethod, headers: headers,
-                                      protocol: (orig: "HTTP/1." & $minorVersion, major: 1, minor: int(minorVersion)), 
-                                      url: parseUri(path), hostname: hostname, body: "")
+                var requestIsValid = true
+                var request: Request
 
-                await callback(request)
+                try:
+                    request = Request(client: socket, reqMethod: reqMethod, headers: headers,
+                                          protocol: (orig: "HTTP/1." & $minorVersion, major: 1, minor: int(minorVersion)), 
+                                          url: parseUri(path), hostname: hostname, body: "")
+                except ValueError:
+                    requestIsValid = false
+
+                if requestIsValid:
+                    await callback(request)
+                else:
+                    await socket.sendBadRequestAndClose
             else:
                 await socket.sendBadRequestAndClose
         else:
