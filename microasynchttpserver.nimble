@@ -1,6 +1,6 @@
 [Package]
 
-version       = "0.10.1"
+version       = "0.10.2"
 author        = "Philip Wernersbach"
 description   = "A thin asynchronous HTTP server library, API compatible with Nim\'s built-in asynchttpserver."
 license       = "MIT"

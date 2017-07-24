@@ -30,9 +30,6 @@ import asynchttpserver
 import strutils
 import uri
 
-when compileOption("threads"):
-    import threadpool
-
 import picohttpparser_api
 
 const HTTP_HEADER_BUFFER_INITIAL_SIZE = 512
@@ -136,10 +133,7 @@ proc serve*(server: MicroAsyncHttpServer, port: Port, callback: proc (request: R
         let socket = await server.socket.acceptAddr
 
         try:
-            when compileOption("threads"):
-                spawn(asyncCheck socket.client.processConnection(socket.address, callback))
-            else:
-                asyncCheck socket.client.processConnection(socket.address, callback)
+            asyncCheck socket.client.processConnection(socket.address, callback)
         except Exception:
             if not socket.client.isClosed:
                 socket.client.close
