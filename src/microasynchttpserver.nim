@@ -24,7 +24,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-import std/[asyncdispatch, asyncnet, asynchttpserver, strutils, uri, options, strformat]
+import std/[asyncdispatch, asyncnet, asynchttpserver, strutils, uri, options, strformat, selectors]
 
 import picohttpparser/api
 
@@ -156,7 +156,12 @@ proc serve*(
     server.socket.listen()
 
     while true:
-        let socket = await server.socket.acceptAddr()
+        var socket: tuple[address: string, client: AsyncSocket]
+        try:
+            socket = await server.socket.acceptAddr()
+        except IOSelectorsException:
+            # The socket couldn't be accepted right now, restart at the beginning of the loop
+            continue
 
         try:
             asyncCheck socket.client.processConnection(socket.address, callback)
@@ -214,7 +219,9 @@ proc readBody*(req: Request): Future[Option[string]] {.async.} =
     # In that case, we'll free the memory that we've allocated, close the socket, and finally raise OSError.
     if bodyReadPos < bodyLen:
         body.setLen(0)
-        req.client.close()
+        if not req.client.isClosed:
+            req.client.close()
+
         raise newException(OSError, fmt"Client disconnected before full body could be read ({bodyReadPos}/{bodyLen} bytes read)")
 
     # If we didn't return yet, the body was fully read
