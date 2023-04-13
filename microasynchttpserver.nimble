@@ -10,5 +10,4 @@ srcDir        = "src"
 # Dependencies
 
 requires "nim >= 1.6.12"
-requires "https://github.com/termermc/nim-picohttpparser"
-#requires "picohttpparser >= 0.11.0"
+requires "picohttpparser >= 0.11.0"
