@@ -1,7 +1,7 @@
 # microasynchttpserver
 microasynchttpserver is a thin asynchronous HTTP server library for Nim. It is
 API-compatible with Nim's built-in
-[asynchttpserver](https://github.com/nim-lang/Nim/blob/devel/lib/pure/asynchttpserver.nim),
+[asynchttpserver](https://nim-lang.org/docs/asynchttpserver.html),
 and allows programs greater control over the HTTP connection than
 asynchttpserver does.
 
