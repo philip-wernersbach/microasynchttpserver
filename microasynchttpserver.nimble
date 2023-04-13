@@ -1,10 +1,14 @@
-[Package]
+# Package
 
-version       = "0.10.2"
+version       = "0.11.0"
 author        = "Philip Wernersbach"
-description   = "A thin asynchronous HTTP server library, API compatible with Nim\'s built-in asynchttpserver."
+description   = "A thin asynchronous HTTP server library, API compatible with Nim\'s built-in asynchttpserver"
 license       = "MIT"
+srcDir        = "src"
 
-[Deps]
 
-Requires: "picohttpparser >= 0.10.0"
+# Dependencies
+
+requires "nim >= 1.6.12"
+requires "https://github.com/termermc/nim-picohttpparser"
+#requires "picohttpparser >= 0.11.0"
