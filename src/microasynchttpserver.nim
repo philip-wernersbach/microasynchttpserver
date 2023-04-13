@@ -158,6 +158,10 @@ proc serve*(
     while true:
         var socket: tuple[address: string, client: AsyncSocket]
         try:
+            # Trying to re-implement the accept proc from asyncnet turned out to not work.
+            # All sorts of issues were going on that ultimately would mess up the server's operation, including double-completion of futures.
+            # Currently this try-except is the best way to avoid crashing the server on file descriptor exhaustion.
+            # The only caveat is that connections that cannot be served will be immediately rejected instead of waiting in some cases.
             socket = await server.socket.acceptAddr()
         except IOSelectorsException:
             # The socket couldn't be accepted right now, restart at the beginning of the loop
