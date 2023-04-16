@@ -43,7 +43,7 @@ proc newMicroAsyncHttpServer*(): MicroAsyncHttpServer =
     res.socket = newAsyncSocket()
     return res
 
-const badRequestHttpResponse = "HTTP/1.1 400 Bad Request\r\nExpires: Thu, 01 Jan 1970 00:00:01 GMT\r\nContent-Length: 0\r\n\r\n"
+const badRequestHttpResponse = "HTTP/1.0 400 Bad Request\r\nExpires: Thu, 01 Jan 1970 00:00:01 GMT\r\nContent-Length: 0\r\n\r\n"
     ## The 400 Bad Request HTTP response string used by MicroAsyncHttpServer
 
 proc sendBadRequestAndClose(socket: AsyncSocket): Future[void] {.async.} =
