@@ -222,7 +222,7 @@ proc readBody*(req: Request): Future[Option[string]] {.async.} =
     # If the body read position is less than the expected size, the client must have disconnected part-way through the read.
     # In that case, we'll free the memory that we've allocated, close the socket, and finally raise OSError.
     if bodyReadPos < bodyLen:
-        body.setLen(0)
+        body = ""
         if not req.client.isClosed:
             req.client.close()
 
