@@ -14,7 +14,7 @@ test "Accept GET and POST":
         const serverAddr = "127.0.0.1"
         const serverPort = 8989
 
-        asyncCheck server.serve(serverPort.Port, serverAddr, onRequest)
+        asyncCheck server.serve(serverPort.Port, onRequest, serverAddr)
 
         let client = newAsyncHttpClient()
 
