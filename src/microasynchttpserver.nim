@@ -221,7 +221,7 @@ proc readBody*(req: Request): Future[Option[string]] {.async.} =
         if not req.client.isClosed:
             req.client.close()
 
-        raise newException(OSError, fmt"Client disconnected before full body could be read ({bodyReadPos}/{bodyLen} bytes read)")
+        raise newException(EOFError, fmt"Client disconnected before full body could be read ({bodyReadPos}/{bodyLen} bytes read)")
 
     # If we didn't return yet, the body was fully read
     return some body
