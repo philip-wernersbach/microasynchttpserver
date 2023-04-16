@@ -127,8 +127,8 @@ proc processConnection(socket: AsyncSocket, hostname: string, callback: proc (re
 proc serve*(
     server: MicroAsyncHttpServer,
     port: Port,
-    address = "127.0.0.1",
     callback: proc (request: Request): Future[void] {.closure,gcsafe.},
+    address = "127.0.0.1",
     sockOpts: set[SOBool] = {OptReuseAddr},
 ) {.async.} =
     ## Starts the server on the specified port and address.
