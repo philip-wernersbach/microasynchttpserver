@@ -201,15 +201,23 @@ proc readBody*(req: Request): Future[Option[string]] {.async.} =
         # Read buffer
         let bufLen = await req.client.recvInto(addr buf, min(bodyLen - bodyReadPos, buf.len))
 
-        # End of stream; break
+        # No data was read, check if client is closed
         if bufLen == 0:
-            break
+            if req.client.isClosed:
+                # Client is closed, stream is finished
+                break
+            else:
+                # The client is not closed, there must be more data to read
+                continue
 
         # Write read buffer to body
-        for i in 0 ..< bufLen:
-            body[i + bodyReadPos] = buf[i]
+        copyMem(addr body[bodyReadPos], addr buf[0], bufLen)
 
         bodyReadPos += bufLen
+
+        # The whole body was read; break
+        if bodyReadPos >= bodyLen:
+            break
 
     # If the body read position is less than the expected size, the client must have disconnected part-way through the read.
     # In that case, we'll free the memory that we've allocated, close the socket, and finally raise OSError.
