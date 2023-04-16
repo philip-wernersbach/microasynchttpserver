@@ -201,14 +201,9 @@ proc readBody*(req: Request): Future[Option[string]] {.async.} =
         # Read buffer
         let bufLen = await req.client.recvInto(addr buf, min(bodyLen - bodyReadPos, buf.len))
 
-        # No data was read, check if client is closed
+        # End of stream; break
         if bufLen == 0:
-            if req.client.isClosed:
-                # Client is closed, stream is finished
-                break
-            else:
-                # The client is not closed, there must be more data to read
-                continue
+            break
 
         # Write read buffer to body
         copyMem(addr body[bodyReadPos], addr buf[0], bufLen)
