@@ -30,7 +30,7 @@ import picohttpparser/api
 
 const HTTP_HEADER_BUFFER_INITIAL_SIZE = 512
 
-type MicroAsyncHttpServer* = ref tuple
+type MicroAsyncHttpServer* = ref object
     ## A MicroAsyncHttpServer object.
     ## It is API-compatible with AsyncHttpServer.
 
@@ -39,9 +39,7 @@ type MicroAsyncHttpServer* = ref tuple
 proc newMicroAsyncHttpServer*(): MicroAsyncHttpServer =
     ## Creates a new MicroAsyncHttpServer instance
 
-    let res = new MicroAsyncHttpServer
-    res.socket = newAsyncSocket()
-    return res
+    return MicroAsyncHttpServer(socket: newAsyncSocket())
 
 const badRequestHttpResponse = "HTTP/1.0 400 Bad Request\r\nExpires: Thu, 01 Jan 1970 00:00:01 GMT\r\nContent-Length: 0\r\n\r\n"
     ## The 400 Bad Request HTTP response string used by MicroAsyncHttpServer
