@@ -34,12 +34,13 @@ type MicroAsyncHttpServer* = ref object
     ## A MicroAsyncHttpServer object.
     ## It is API-compatible with AsyncHttpServer.
 
-    socket: AsyncSocket
+    socketInternal: AsyncSocket
+        ## Internal property, see getter
 
 proc newMicroAsyncHttpServer*(): MicroAsyncHttpServer =
     ## Creates a new MicroAsyncHttpServer instance
 
-    return MicroAsyncHttpServer(socket: newAsyncSocket())
+    return MicroAsyncHttpServer(socketInternal: newAsyncSocket())
 
 const badRequestHttpResponse = "HTTP/1.0 400 Bad Request\r\nExpires: Thu, 01 Jan 1970 00:00:01 GMT\r\nContent-Length: 0\r\n\r\n"
     ## The 400 Bad Request HTTP response string used by MicroAsyncHttpServer
@@ -140,10 +141,10 @@ proc serve*(
     ## If you want to use multiple instances to serve over multiple threads, you should also add OptReusePort.
 
     for opt in sockOpts:
-        server.socket.setSockOpt(opt, true)
+        server.socketInternal.setSockOpt(opt, true)
 
-    server.socket.bindAddr(port, address)
-    server.socket.listen()
+    server.socketInternal.bindAddr(port, address)
+    server.socketInternal.listen()
 
     while true:
         var socket: tuple[address: string, client: AsyncSocket]
@@ -152,7 +153,7 @@ proc serve*(
             # All sorts of issues were going on that ultimately would mess up the server's operation, including double-completion of futures.
             # Currently this try-except is the best way to avoid crashing the server on file descriptor exhaustion.
             # The only caveat is that connections that cannot be served will be immediately rejected instead of waiting in some cases.
-            socket = await server.socket.acceptAddr()
+            socket = await server.socketInternal.acceptAddr()
         except IOSelectorsException:
             # The socket couldn't be accepted right now, restart at the beginning of the loop
             continue
@@ -223,3 +224,18 @@ proc readBody*(req: Request): Future[Option[string]] {.async.} =
 
     # If we didn't return yet, the body was fully read
     return some body
+
+func socket*(this: MicroAsyncHttpServer): AsyncSocket {.inline.} =
+    ## Returns the server's underlying socket
+    
+    return this.socketInternal
+
+func isClosed*(this: MicroAsyncHttpServer): bool {.inline.} =
+    ## Returns whether the server's underlying socket is closed
+    
+    return this.socket.isClosed
+
+proc close*(this: MicroAsyncHttpServer) {.inline.} =
+    ## Closes the server's underlying socket
+    
+    this.socket.close()
