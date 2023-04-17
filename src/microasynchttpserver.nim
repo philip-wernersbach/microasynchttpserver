@@ -34,7 +34,8 @@ type MicroAsyncHttpServer* = ref object
     ## A MicroAsyncHttpServer object.
     ## It is API-compatible with AsyncHttpServer.
 
-    socket: AsyncSocket
+    socketInternal: AsyncSocket
+        ## Internal property, see getter
 
 proc newMicroAsyncHttpServer*(): MicroAsyncHttpServer =
     ## Creates a new MicroAsyncHttpServer instance
@@ -223,3 +224,18 @@ proc readBody*(req: Request): Future[Option[string]] {.async.} =
 
     # If we didn't return yet, the body was fully read
     return some body
+
+func socket*(this: MicroAsyncHttpServer): AsyncSocket {.inline.} =
+    ## Returns the server's underlying socket
+    
+    return this.socketInternal
+
+func isClosed*(this: MicroAsyncHttpServer): bool {.inline.} =
+    ## Returns whether the server's underlying socket is closed
+    
+    return this.socket.isClosed
+
+proc close*(this: MicroAsyncHttpServer) {.inline.} =
+    ## Closes the server's underlying socket
+    
+    this.socket.close()
